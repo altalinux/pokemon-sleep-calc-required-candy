@@ -65,6 +65,7 @@ candycalc [from] [to] [options]
   * `normal` / `std`
   * `none` / `off`
 
+- デフォルト出力は pretty (--pretty)。機械処理したい場合は --json を指定してください。
 ヘルプ：
 
 ```bash
@@ -74,7 +75,7 @@ candycalc --help
 ### 注意点
 
 * `--candyboost mini/normal` は **アメEXPが2倍**になります。
-* ゆめのかけら倍率は **mini=4倍 / normal=6倍**（noneは通常）です。
+* ゆめのかけら倍率は **mini=4倍 / normal=5倍**（noneは通常）です。
 * 出力は JSON です。
 
 ---

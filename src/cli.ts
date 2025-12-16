@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { Command } from "commander";
 import * as calculator from "./lib/calculator";
 
@@ -38,6 +37,31 @@ function parseCandyBoost(v: string): CandyBoost {
   throw new Error(`--candyboost は mini / normal(std) / none(off) のいずれかです: ${v}`);
 }
 
+function formatPretty(o: {
+  from: number;
+  to: number;
+  nature: "up" | "down" | "neutral";
+  exp_type: 600 | 900 | 1080;
+  candyboost: "mini" | "normal" | "none";
+  requiredExp: number;
+  requiredCandy: number;
+  requiredDreamShards: number;
+}) {
+  const nf = new Intl.NumberFormat("ja-JP");
+  return [
+    "candycalc result",
+    "----------------",
+    `Level:           ${o.from} → ${o.to}`,
+    `Nature (EXP):    ${o.nature}`,
+    `Exp type:        ${o.exp_type}`,
+    `Candy boost:     ${o.candyboost}`,
+    "",
+    `Required EXP:        ${nf.format(o.requiredExp)}`,
+    `Required candies:    ${nf.format(o.requiredCandy)} 個`,
+    `Required shards:     ${nf.format(o.requiredDreamShards)}`,
+  ].join("\n");
+}
+
 const program = new Command();
 
 program
@@ -66,6 +90,8 @@ program
     parseCandyBoost,
     "none",
   )
+  .option("--pretty", "人間向けの整形表示で出力（デフォルト）")
+  .option("--json", "JSONで出力")
   .addHelpText(
     "after",
     `
@@ -76,7 +102,7 @@ Examples:
 
 Notes:
   - --candyboost mini/normal はアメEXPが2倍になります。
-  - ゆめのかけら倍率は mini=4倍 / normal=6倍（noneは通常）です。
+  - ゆめのかけら倍率は mini=4倍 / normal=5倍（noneは通常）です。
   - 出力はJSONです。
 `,
   )
@@ -87,6 +113,8 @@ Notes:
       nature: NatureCli;
       exp_type: ExpTypeCli;
       candyboost: CandyBoost;
+      pretty?: boolean;
+      json?: boolean;
     }>();
 
     const from = opts.from ?? argFrom;
@@ -112,22 +140,28 @@ Notes:
           ? calculator.calcRequiredBoostedDreamShards(from, to, natureForCalc, expTypeForCalc)
           : calculator.calcRequiredMiniBoostedDreamShards(from, to, natureForCalc, expTypeForCalc);
 
-    console.log(
-      JSON.stringify(
-        {
-          from,
-          to,
-          nature: opts.nature,
-          exp_type: opts.exp_type,
-          candyboost: opts.candyboost,
-          requiredExp,
-          requiredCandy,
-          requiredDreamShards,
-        },
-        null,
-        2,
-      ),
-    );
+    const out = {
+        from,
+        to,
+        nature: opts.nature,
+        exp_type: opts.exp_type,
+        candyboost: opts.candyboost,
+        requiredExp,
+        requiredCandy,
+        requiredDreamShards,
+    };
+
+    // 両方指定はエラーにする（おすすめ）
+    if (opts.json && opts.pretty) {
+        program.error("--json と --pretty は同時に指定できません。");
+    }
+
+    // デフォルトは pretty（= --json がなければ pretty）
+    if (opts.json) {
+        console.log(JSON.stringify(out, null, 2));
+    } else {
+        console.log(formatPretty(out));
+    }
   });
 
 program.parse(process.argv);

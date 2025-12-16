@@ -237,7 +237,7 @@ var calcRequiredMiniBoostedDreamShards = (currentLevel, targetLevel, nature, exp
 // src/cli.ts
 function parseIntStrict(label) {
   return (v) => {
-    if (!/^\d+$/.test(v)) throw new Error(`${label} \u306F\u6574\u6570\u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044: ${v}`);
+    if (!/^\d+$/.test(v)) throw new Error(`${label} \u306F1\u4EE5\u4E0A\u306E\u6574\u6570\u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044: ${v}`);
     const n = Number(v);
     if (!Number.isSafeInteger(n) || n <= 0) throw new Error(`${label} \u306F1\u4EE5\u4E0A\u306E\u6574\u6570\u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044: ${v}`);
     return n;
@@ -247,12 +247,12 @@ function parseNature(v) {
   const s = v.trim().toLowerCase();
   if (s === "up" || s === "exp-up" || s === "expup") return "up";
   if (s === "down" || s === "exp-down" || s === "expdown") return "down";
-  if (s === "neutral" || s === "exp-neutral" || s === "expneutral" || s === "normal") return "normal";
-  throw new Error(`--nature \u306F up/down/neutral(normal) \u307E\u305F\u306F exp-up/exp-down/exp-neutral \u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044: ${v}`);
+  if (s === "neutral" || s === "exp-neutral" || s === "expneutral") return "neutral";
+  throw new Error(`--nature \u306F up/down/neutral \u307E\u305F\u306F exp-up/exp-down/exp-neutral \u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044: ${v}`);
 }
 function parseExpType(v) {
-  const s = String(v).trim();
-  if (s === "600" || s === "900" || s === "1080") return s;
+  const n = Number(v);
+  if (n === 600 || n === 900 || n === 1080) return n;
   throw new Error(`--exp_type \u306F 600 / 900 / 1080 \u306E\u3044\u305A\u308C\u304B\u3067\u3059: ${v}`);
 }
 function parseCandyBoost(v) {
@@ -260,25 +260,81 @@ function parseCandyBoost(v) {
   if (s === "mini") return "mini";
   if (s === "normal" || s === "std") return "normal";
   if (s === "none" || s === "off") return "none";
-  throw new Error(`--candyboost \u306F mini / normal / std / none / off \u306E\u3044\u305A\u308C\u304B\u3067\u3059: ${v}`);
+  throw new Error(`--candyboost \u306F mini / normal(std) / none(off) \u306E\u3044\u305A\u308C\u304B\u3067\u3059: ${v}`);
+}
+function formatPretty(o) {
+  const nf = new Intl.NumberFormat("ja-JP");
+  return [
+    "candycalc result",
+    "----------------",
+    `Level:           ${o.from} \u2192 ${o.to}`,
+    `Nature (EXP):    ${o.nature}`,
+    `Exp type:        ${o.exp_type}`,
+    `Candy boost:     ${o.candyboost}`,
+    "",
+    `Required EXP:        ${nf.format(o.requiredExp)}`,
+    `Required candies:    ${nf.format(o.requiredCandy)} \u500B`,
+    `Required shards:     ${nf.format(o.requiredDreamShards)}`
+  ].join("\n");
 }
 var program = new import_commander.Command();
-program.name("candycalc").description("Pok\xE9mon Sleep: required candy / exp / dream shards calculator (CLI)").argument("[from]", "\u521D\u671F\u30EC\u30D9\u30EB\uFF08\u6570\u5024\uFF09", parseIntStrict("from")).argument("[to]", "\u76EE\u6A19\u30EC\u30D9\u30EB\uFF08\u6570\u5024\uFF09", parseIntStrict("to")).option("-f, --from <level>", "\u521D\u671F\u30EC\u30D9\u30EB\uFF08\u6570\u5024\uFF09", parseIntStrict("from")).option("-t, --to <level>", "\u76EE\u6A19\u30EC\u30D9\u30EB\uFF08\u6570\u5024\uFF09", parseIntStrict("to")).option("-n, --nature <nature>", "\u305B\u3044\u304B\u304F\u88DC\u6B63: exp-up/exp-down/exp-neutral or up/down/neutral", parseNature, "normal").option("-e, --exp_type <type>", "\u7D4C\u9A13\u5024\u30BF\u30A4\u30D7: 600 / 900 / 1080", parseExpType, "600").option("-c, --candyboost <mode>", "\u30A2\u30E1\u30D6\u30FC\u30B9\u30C8: mini / normal(std) / none(off)", parseCandyBoost, "none").action((argFrom, argTo) => {
+program.name("candycalc").description("Pok\xE9mon Sleep\u306E\u30EC\u30D9\u30EB\u4E0A\u3052\u306B\u5FC5\u8981\u306A\u300CEXP / \u30A2\u30E1\u6570 / \u3086\u3081\u306E\u304B\u3051\u3089\u300D\u3092\u8A08\u7B97\u3057\u307E\u3059\u3002").usage("[from] [to] [options]").argument("[from]", "\u521D\u671F\u30EC\u30D9\u30EB\uFF08\u6574\u6570\uFF09\u3002\u7701\u7565\u6642\u306F --from \u3092\u4F7F\u7528", parseIntStrict("from")).argument("[to]", "\u76EE\u6A19\u30EC\u30D9\u30EB\uFF08\u6574\u6570\uFF09\u3002\u7701\u7565\u6642\u306F --to \u3092\u4F7F\u7528", parseIntStrict("to")).option("-f, --from <level>", "\u521D\u671F\u30EC\u30D9\u30EB\uFF08\u6574\u6570\uFF09\u3002\u4F4D\u7F6E\u5F15\u6570\u3067\u3082\u6307\u5B9A\u53EF", parseIntStrict("from")).option("-t, --to <level>", "\u76EE\u6A19\u30EC\u30D9\u30EB\uFF08\u6574\u6570\uFF09\u3002\u4F4D\u7F6E\u5F15\u6570\u3067\u3082\u6307\u5B9A\u53EF", parseIntStrict("to")).option(
+  "-n, --nature <nature>",
+  "\u6027\u683C\u88DC\u6B63\uFF08EXP\uFF09: up(exp-up) / down(exp-down) / neutral(exp-neutral)",
+  parseNature,
+  "neutral"
+).option(
+  "-e, --exp_type <type>",
+  "\u7D4C\u9A13\u5024\u30BF\u30A4\u30D7: 600 / 900 / 1080",
+  parseExpType,
+  600
+).option(
+  "-c, --candyboost <mode>",
+  "\u30A2\u30E1\u30D6\u30FC\u30B9\u30C8: mini / normal(std) / none(off)",
+  parseCandyBoost,
+  "none"
+).option("--pretty", "\u4EBA\u9593\u5411\u3051\u306E\u6574\u5F62\u8868\u793A\u3067\u51FA\u529B\uFF08\u30C7\u30D5\u30A9\u30EB\u30C8\uFF09").option("--json", "JSON\u3067\u51FA\u529B").addHelpText(
+  "after",
+  `
+Examples:
+  $ candycalc 10 25
+  $ candycalc -f 10 -t 25 -n exp-up -e 900 -c mini
+  $ candycalc 10 25 -c normal
+
+Notes:
+  - --candyboost mini/normal \u306F\u30A2\u30E1EXP\u304C2\u500D\u306B\u306A\u308A\u307E\u3059\u3002
+  - \u3086\u3081\u306E\u304B\u3051\u3089\u500D\u7387\u306F mini=4\u500D / normal=5\u500D\uFF08none\u306F\u901A\u5E38\uFF09\u3067\u3059\u3002
+  - \u51FA\u529B\u306FJSON\u3067\u3059\u3002
+`
+).action((argFrom, argTo) => {
   const opts = program.opts();
   const from = opts.from ?? argFrom;
   const to = opts.to ?? argTo;
   if (from == null || to == null) {
     program.error("\u521D\u671F\u30EC\u30D9\u30EB\u3068\u76EE\u6A19\u30EC\u30D9\u30EB\u304C\u5FC5\u8981\u3067\u3059\u3002\u4F8B: candycalc 10 25 / candycalc -f 10 -t 25");
   }
-  const requiredExp = calcRequiredExp(from, to, opts.exp_type);
-  const requiredCandy = opts.candyboost === "none" ? calcRequiredCandy(from, to, opts.nature, opts.exp_type) : calcRequiredBoostedCandy(from, to, opts.nature, opts.exp_type);
-  const requiredDreamShards = opts.candyboost === "none" ? calcRequiredDreamShards(from, to, opts.nature, opts.exp_type) : opts.candyboost === "normal" ? calcRequiredBoostedDreamShards(from, to, opts.nature, opts.exp_type) : calcRequiredMiniBoostedDreamShards(from, to, opts.nature, opts.exp_type);
-  console.log(
-    JSON.stringify(
-      { from, to, nature: opts.nature, exp_type: opts.exp_type, candyboost: opts.candyboost, requiredExp, requiredCandy, requiredDreamShards },
-      null,
-      2
-    )
-  );
+  const natureForCalc = opts.nature === "neutral" ? "normal" : opts.nature;
+  const expTypeForCalc = String(opts.exp_type);
+  const requiredExp = calcRequiredExp(from, to, expTypeForCalc);
+  const requiredCandy = opts.candyboost === "none" ? calcRequiredCandy(from, to, natureForCalc, expTypeForCalc) : calcRequiredBoostedCandy(from, to, natureForCalc, expTypeForCalc);
+  const requiredDreamShards = opts.candyboost === "none" ? calcRequiredDreamShards(from, to, natureForCalc, expTypeForCalc) : opts.candyboost === "normal" ? calcRequiredBoostedDreamShards(from, to, natureForCalc, expTypeForCalc) : calcRequiredMiniBoostedDreamShards(from, to, natureForCalc, expTypeForCalc);
+  const out = {
+    from,
+    to,
+    nature: opts.nature,
+    exp_type: opts.exp_type,
+    candyboost: opts.candyboost,
+    requiredExp,
+    requiredCandy,
+    requiredDreamShards
+  };
+  if (opts.json && opts.pretty) {
+    program.error("--json \u3068 --pretty \u306F\u540C\u6642\u306B\u6307\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002");
+  }
+  if (opts.json) {
+    console.log(JSON.stringify(out, null, 2));
+  } else {
+    console.log(formatPretty(out));
+  }
 });
 program.parse(process.argv);
