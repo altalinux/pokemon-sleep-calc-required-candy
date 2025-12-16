@@ -103,7 +103,7 @@ Examples:
 Notes:
   - --candyboost mini/normal はアメEXPが2倍になります。
   - ゆめのかけら倍率は mini=4倍 / normal=5倍（noneは通常）です。
-  - 出力はJSONです。
+  - デフォルト出力は pretty (--pretty)。機械処理したい場合は --json を指定してください。
 `,
   )
   .action((argFrom: number | undefined, argTo: number | undefined) => {
