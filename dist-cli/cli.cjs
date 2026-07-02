@@ -239,7 +239,8 @@ function parseIntStrict(label) {
   return (v) => {
     if (!/^\d+$/.test(v)) throw new Error(`${label} \u306F1\u4EE5\u4E0A\u306E\u6574\u6570\u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044: ${v}`);
     const n = Number(v);
-    if (!Number.isSafeInteger(n) || n <= 0) throw new Error(`${label} \u306F1\u4EE5\u4E0A\u306E\u6574\u6570\u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044: ${v}`);
+    if (!Number.isSafeInteger(n) || n <= 0)
+      throw new Error(`${label} \u306F1\u4EE5\u4E0A\u306E\u6574\u6570\u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044: ${v}`);
     return n;
   };
 }
@@ -248,7 +249,9 @@ function parseNature(v) {
   if (s === "up" || s === "exp-up" || s === "expup") return "up";
   if (s === "down" || s === "exp-down" || s === "expdown") return "down";
   if (s === "neutral" || s === "exp-neutral" || s === "expneutral") return "neutral";
-  throw new Error(`--nature \u306F up/down/neutral \u307E\u305F\u306F exp-up/exp-down/exp-neutral \u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044: ${v}`);
+  throw new Error(
+    `--nature \u306F up/down/neutral \u307E\u305F\u306F exp-up/exp-down/exp-neutral \u3067\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044: ${v}`
+  );
 }
 function parseExpType(v) {
   const n = Number(v);
@@ -283,27 +286,25 @@ program.name("candycalc").description("Pok\xE9mon Sleep\u306E\u30EC\u30D9\u30EB\
   "\u6027\u683C\u88DC\u6B63\uFF08EXP\uFF09: up(exp-up) / down(exp-down) / neutral(exp-neutral)",
   parseNature,
   "neutral"
-).option(
-  "-e, --exp_type <type>",
-  "\u7D4C\u9A13\u5024\u30BF\u30A4\u30D7: 600 / 900 / 1080",
-  parseExpType,
-  600
-).option(
+).option("-e, --exp_type <type>", "\u7D4C\u9A13\u5024\u30BF\u30A4\u30D7: 600 / 900 / 1080", parseExpType, 600).option(
   "-c, --candyboost <mode>",
   "\u30A2\u30E1\u30D6\u30FC\u30B9\u30C8: mini / normal(std) / none(off)",
   parseCandyBoost,
   "none"
-).option("--pretty", "\u4EBA\u9593\u5411\u3051\u306E\u6574\u5F62\u8868\u793A\u3067\u51FA\u529B\uFF08\u30C7\u30D5\u30A9\u30EB\u30C8\uFF09").option("--json", "JSON\u3067\u51FA\u529B").addHelpText(
+).option("--up", "\u6027\u683C\u88DC\u6B63(EXP)\u3092 up \u306B\u3059\u308B\uFF08-n up \u3068\u540C\u7B49\uFF09").option("--down", "\u6027\u683C\u88DC\u6B63(EXP)\u3092 down \u306B\u3059\u308B\uFF08-n down \u3068\u540C\u7B49\uFF09").option("--neutral", "\u6027\u683C\u88DC\u6B63(EXP)\u3092 neutral \u306B\u3059\u308B\uFF08-n neutral \u3068\u540C\u7B49\uFF09").option("--600", "\u7D4C\u9A13\u5024\u30BF\u30A4\u30D7\u3092 600 \u306B\u3059\u308B\uFF08-e 600 \u3068\u540C\u7B49\uFF09").option("--900", "\u7D4C\u9A13\u5024\u30BF\u30A4\u30D7\u3092 900 \u306B\u3059\u308B\uFF08-e 900 \u3068\u540C\u7B49\uFF09").option("--1080", "\u7D4C\u9A13\u5024\u30BF\u30A4\u30D7\u3092 1080 \u306B\u3059\u308B\uFF08-e 1080 \u3068\u540C\u7B49\uFF09").option("--mini", "\u30DF\u30CB\u30A2\u30E1\u30D6\u30FC\u30B9\u30C8\uFF08-c mini \u3068\u540C\u7B49\uFF09").option("--normal", "\u901A\u5E38\u30A2\u30E1\u30D6\u30FC\u30B9\u30C8\uFF08-c normal \u3068\u540C\u7B49\uFF09").option("--none", "\u30A2\u30E1\u30D6\u30FC\u30B9\u30C8\u306A\u3057\uFF08-c none \u3068\u540C\u7B49\u3001\u30C7\u30D5\u30A9\u30EB\u30C8\uFF09").option("--pretty", "\u4EBA\u9593\u5411\u3051\u306E\u6574\u5F62\u8868\u793A\u3067\u51FA\u529B\uFF08\u30C7\u30D5\u30A9\u30EB\u30C8\uFF09").option("--json", "JSON\u3067\u51FA\u529B").addHelpText(
   "after",
   `
 Examples:
   $ candycalc 10 25
+  $ candycalc 10 25 --down --900
+  $ candycalc 10 25 --mini
   $ candycalc -f 10 -t 25 -n exp-up -e 900 -c mini
-  $ candycalc 10 25 -c normal
+  $ candycalc 10 25 -c normal --json
 
 Notes:
   - --candyboost mini/normal \u306F\u30A2\u30E1EXP\u304C2\u500D\u306B\u306A\u308A\u307E\u3059\u3002
-  - \u3086\u3081\u306E\u304B\u3051\u3089\u500D\u7387\u306F mini=4\u500D / normal=5\u500D\uFF08none\u306F\u901A\u5E38\uFF09\u3067\u3059\u3002
+  - \u3086\u3081\u306E\u304B\u3051\u3089\u500D\u7387\u306F mini=4\u500D / normal=6\u500D\uFF08none\u306F\u901A\u5E38\uFF09\u3067\u3059\u3002
+  - -n/-e/-c \u306E\u4EE3\u308F\u308A\u306B --down / --900 / --mini \u306E\u3088\u3046\u306A\u30B7\u30E7\u30FC\u30C8\u30AB\u30C3\u30C8\u6307\u5B9A\u3082\u53EF\u80FD\u3067\u3059\u3002
   - \u30C7\u30D5\u30A9\u30EB\u30C8\u51FA\u529B\u306F pretty (--pretty)\u3002\u6A5F\u68B0\u51E6\u7406\u3057\u305F\u3044\u5834\u5408\u306F --json \u3092\u6307\u5B9A\u3057\u3066\u304F\u3060\u3055\u3044\u3002
 `
 ).action((argFrom, argTo) => {
@@ -311,7 +312,58 @@ Notes:
   const from = opts.from ?? argFrom;
   const to = opts.to ?? argTo;
   if (from == null || to == null) {
-    program.error("\u521D\u671F\u30EC\u30D9\u30EB\u3068\u76EE\u6A19\u30EC\u30D9\u30EB\u304C\u5FC5\u8981\u3067\u3059\u3002\u4F8B: candycalc 10 25 / candycalc -f 10 -t 25");
+    program.error(
+      "\u521D\u671F\u30EC\u30D9\u30EB\u3068\u76EE\u6A19\u30EC\u30D9\u30EB\u304C\u5FC5\u8981\u3067\u3059\u3002\u4F8B: candycalc 10 25 / candycalc -f 10 -t 25"
+    );
+  }
+  const argv = process.argv.slice(2);
+  const natureFromN = argv.includes("-n") || argv.includes("--nature");
+  const expFromE = argv.includes("-e") || argv.includes("--exp_type");
+  const boostFromC = argv.includes("-c") || argv.includes("--candyboost");
+  const natureFlags = [
+    opts.up ? "up" : null,
+    opts.down ? "down" : null,
+    opts.neutral ? "neutral" : null
+  ].filter(Boolean);
+  if (natureFlags.length > 1) {
+    program.error("--up/--down/--neutral \u306F\u540C\u6642\u306B\u6307\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002");
+  }
+  if (natureFlags.length === 1) {
+    if (natureFromN) {
+      program.error("-n/--nature \u3068 --up/--down/--neutral \u306F\u540C\u6642\u306B\u6307\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002");
+    }
+    opts.nature = natureFlags[0];
+  }
+  const expFlags = [
+    opts["600"] ? 600 : null,
+    opts["900"] ? 900 : null,
+    opts["1080"] ? 1080 : null
+  ].filter(Boolean);
+  if (expFlags.length > 1) {
+    program.error("--600/--900/--1080 \u306F\u540C\u6642\u306B\u6307\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002");
+  }
+  if (expFlags.length === 1) {
+    if (expFromE) {
+      program.error("-e/--exp_type \u3068 --600/--900/--1080 \u306F\u540C\u6642\u306B\u6307\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002");
+    }
+    opts.exp_type = expFlags[0];
+  }
+  const boostFlags = [
+    opts.mini ? "mini" : null,
+    opts.normal ? "normal" : null,
+    opts.none ? "none" : null
+  ].filter(Boolean);
+  if (boostFlags.length > 1) {
+    program.error("--mini/--normal/--none \u306F\u540C\u6642\u306B\u6307\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002");
+  }
+  if (boostFlags.length === 1) {
+    if (boostFromC) {
+      program.error("-c/--candyboost \u3068 --mini/--normal/--none \u306F\u540C\u6642\u306B\u6307\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002");
+    }
+    opts.candyboost = boostFlags[0];
+  }
+  if (opts.json && opts.pretty) {
+    program.error("--json \u3068 --pretty \u306F\u540C\u6642\u306B\u6307\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002");
   }
   const natureForCalc = opts.nature === "neutral" ? "normal" : opts.nature;
   const expTypeForCalc = String(opts.exp_type);
@@ -328,9 +380,6 @@ Notes:
     requiredCandy,
     requiredDreamShards
   };
-  if (opts.json && opts.pretty) {
-    program.error("--json \u3068 --pretty \u306F\u540C\u6642\u306B\u6307\u5B9A\u3067\u304D\u307E\u305B\u3093\u3002");
-  }
   if (opts.json) {
     console.log(JSON.stringify(out, null, 2));
   } else {
