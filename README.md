@@ -90,9 +90,3 @@ candycalc --help
 
 `src/lib/index.ts` の `nextExps` を修正します。
 
----
-
-## デプロイ
-
-main ブランチに push すると GitHub Actions が自動でビルドし、GitHub Pages にデプロイします。
-
