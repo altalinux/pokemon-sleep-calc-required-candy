@@ -1,8 +1,5 @@
 # アメ何個いる？(Pokémon Sleep アメ・経験値シミュレータ)
 
-Web版（GitHub Pages）
-[https://kerusu-1984.github.io/pokemon-sleep-calc-required-candy/](https://kerusu-1984.github.io/pokemon-sleep-calc-required-candy/)
-
 このリポジトリは **Web（Svelte）** と **CLI（Node.js）** の両方で、同じ計算ロジック（`src/lib/calculator.ts`）を利用して「必要EXP / 必要アメ数 / 必要ゆめのかけら」を計算します。
 
 ---
