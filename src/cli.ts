@@ -118,7 +118,7 @@ Examples:
 
 Notes:
   - --candyboost mini/normal はアメEXPが2倍になります。
-  - ゆめのかけら倍率は mini=4倍 / normal=6倍（noneは通常）です。
+  - ゆめのかけら倍率は mini=4倍 / normal=5倍（noneは通常）です。
   - -n/-e/-c の代わりに --down / --900 / --mini のようなショートカット指定も可能です。
   - デフォルト出力は pretty (--pretty)。機械処理したい場合は --json を指定してください。
 `
