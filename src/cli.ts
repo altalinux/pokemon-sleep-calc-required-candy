@@ -150,6 +150,7 @@ Notes:
 			program.error(
 				'初期レベルと目標レベルが必要です。例: candycalc 10 25 / candycalc -f 10 -t 25'
 			);
+			return;
 		}
 
 		// --- ショートカットの処理（衝突チェック込み） ---

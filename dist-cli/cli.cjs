@@ -70,7 +70,12 @@ var totalExps = [
   57280,
   60257,
   63286,
-  66363
+  66363,
+  69458,
+  72574,
+  75718,
+  78907,
+  82162
 ];
 var dreamShardsPerCandy = [
   0,
@@ -137,7 +142,12 @@ var dreamShardsPerCandy = [
   698,
   750,
   804,
-  866
+  866,
+  932,
+  1004,
+  1084,
+  1173,
+  1272
 ];
 var expTypeToRatio = {
   "600": 1,
@@ -159,8 +169,8 @@ var calcRequiredExp = (currentLevel, targetLevel, expType) => {
   return targetExp - currentExp;
 };
 var baseCandyExpByLevel = (level) => {
-  if (level < 25) return 35;
-  if (level < 30) return 30;
+  if (level < 25) return 40;
+  if (level < 30) return 35;
   return 25;
 };
 var calcCandyExp = (nature, level = 30) => {
@@ -315,6 +325,7 @@ Notes:
     program.error(
       "\u521D\u671F\u30EC\u30D9\u30EB\u3068\u76EE\u6A19\u30EC\u30D9\u30EB\u304C\u5FC5\u8981\u3067\u3059\u3002\u4F8B: candycalc 10 25 / candycalc -f 10 -t 25"
     );
+    return;
   }
   const argv = process.argv.slice(2);
   const natureFromN = argv.includes("-n") || argv.includes("--nature");
